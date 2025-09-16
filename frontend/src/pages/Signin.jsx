@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // import useNavigate
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function Signin() {
@@ -9,6 +9,7 @@ export default function Signin() {
   const [shakeFields, setShakeFields] = useState({});
   const [showPassword, setShowPassword] = useState(false);
 
+  const navigate = useNavigate(); // hook for navigation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validateField = (name, value) => {
@@ -43,8 +44,9 @@ export default function Signin() {
     });
     setShakeFields(shake);
 
+    // If no errors, navigate to Home page
     if (Object.keys(newErrors).length === 0) {
-      alert("Signin successful!");
+      navigate("/home"); // redirect to /home
     }
   };
 
@@ -73,7 +75,7 @@ export default function Signin() {
               type="email"
               value={email}
               onChange={(e) => handleChange("email", e.target.value)}
-              placeholder="name@gmail.com"
+              placeholder="Email @gmail.com"
               className={`${inputStyle} ${errors.email ? "border-red-500" : ""}`}
             />
           </div>

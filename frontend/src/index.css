@@ -1,3 +1,153 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Rain animation */
+@keyframes rain {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+  
+  .rain-drop {
+    position: absolute;
+    width: 2px;
+    height: 15px;
+    background: #3b82f6;
+    animation: rain linear infinite;
+  }
+  
+  /* Snow animation */
+  @keyframes snow {
+    0% { transform: translateY(-10%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+  }
+  
+  .snowflake {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    animation: snow linear infinite;
+  }
+  
+  /* Clouds animation */
+  @keyframes clouds {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  .cloud {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    background: #e5e7eb;
+    border-radius: 50%;
+    animation: clouds linear infinite;
+  }
+  
+  /* Sun animation */
+  @keyframes sunRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .sun {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #facc15;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #fbbf24;
+    animation: sunRotate 20s linear infinite;
+  }
+  
+  /* Moon animation */
+@keyframes moonRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .moon {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #d1d5db;
+    animation: moonRotate 30s linear infinite;
+  }
+  
+  /* Rain animation */
+@keyframes rain {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+  .rain-drop {
+    position: absolute;
+    width: 2px;
+    height: 15px;
+    background: #3b82f6;
+    animation: rain linear infinite;
+  }
+  
+  /* Snow animation */
+  @keyframes snow {
+    0% { transform: translateY(-10%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+  }
+  .snowflake {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    animation: snow linear infinite;
+  }
+  
+  /* Clouds animation */
+  @keyframes clouds {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .cloud {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    background: #e5e7eb;
+    border-radius: 50%;
+    animation: clouds linear infinite;
+  }
+  
+  /* Sun animation */
+  @keyframes sunRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .sun {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #facc15;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #fbbf24;
+    animation: sunRotate 20s linear infinite;
+  }
+  
+  /* Moon animation */
+  @keyframes moonRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .moon {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #d1d5db;
+    animation: moonRotate 30s linear infinite;
+  }
+  

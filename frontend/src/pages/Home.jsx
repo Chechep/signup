@@ -14,6 +14,7 @@ import {
   CloudSnow,
 } from "lucide-react";
 import News from "./News";
+import CityMap from "../components/CityMap";
 
 export default function Home() {
   const { logout } = useAuth();
@@ -22,7 +23,7 @@ export default function Home() {
   const [forecast, setForecast] = useState([]);
   const [error, setError] = useState("");
   const [time, setTime] = useState(new Date());
-  const [map, setMap] = useState(null);
+  const [mapCenter, setMapCenter] = useState([1.2921, 36.8219]); // Default Nairobi
 
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
@@ -53,8 +54,8 @@ export default function Home() {
       if (res.ok) {
         setWeather(data);
         setError("");
-        if (map && data.coord) {
-          map.setView([data.coord.lat, data.coord.lon], 10); // move map
+        if (data.coord) {
+          setMapCenter([data.coord.lat, data.coord.lon]); // update map center
         }
       } else {
         setError(data.message);
@@ -82,36 +83,30 @@ export default function Home() {
     }
   };
 
-  // init map
-  useEffect(() => {
-    const L = window.L;
-    if (L && !map) {
-      const newMap = L.map("map", {
-        center: [0, 0],
-        zoom: 2,
-        zoomControl: false,
-      });
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(newMap);
-      setMap(newMap);
-    }
-  }, [map]);
-
   const renderWeatherIcons = () => {
     if (!weather) return null;
     const main = weather.weather[0].main.toLowerCase();
 
     if (main.includes("rain"))
-      return <CloudRain className="absolute top-3 left-3 w-7 h-7 text-blue-500 animate-bounce" />;
+      return (
+        <CloudRain className="absolute top-3 left-3 w-7 h-7 text-blue-500 animate-bounce" />
+      );
     if (main.includes("snow"))
-      return <CloudSnow className="absolute top-3 left-3 w-7 h-7 text-white animate-bounce" />;
+      return (
+        <CloudSnow className="absolute top-3 left-3 w-7 h-7 text-white animate-bounce" />
+      );
     if (main.includes("cloud"))
-      return <Cloud className="absolute top-3 left-3 w-8 h-8 text-gray-400 animate-bounce" />;
+      return (
+        <Cloud className="absolute top-3 left-3 w-8 h-8 text-gray-400 animate-bounce" />
+      );
     if (main.includes("clear") && isDayTime())
-      return <Sun className="absolute top-3 left-3 w-8 h-8 text-yellow-400 animate-spin-slow" />;
+      return (
+        <Sun className="absolute top-3 left-3 w-8 h-8 text-yellow-400 animate-spin-slow" />
+      );
     if (main.includes("clear") && !isDayTime())
-      return <Moon className="absolute top-3 left-3 w-7 h-7 text-gray-300 animate-spin-slow" />;
+      return (
+        <Moon className="absolute top-3 left-3 w-7 h-7 text-gray-300 animate-spin-slow" />
+      );
     return null;
   };
 
@@ -123,7 +118,9 @@ export default function Home() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Map Background */}
-      <div id="map" className="absolute top-0 left-0 w-full h-full z-0"></div>
+      <div className="absolute top-0 left-0 w-full h-full z-0">
+        <CityMap city={city} setCity={setCity} center={mapCenter} />
+      </div>
 
       {/* Weather Dashboard */}
       <div className="relative z-10 w-full bg-white/80 backdrop-blur-md shadow p-4 flex flex-col items-center">
@@ -179,7 +176,9 @@ export default function Home() {
                 <Thermometer className="w-4 h-4 text-red-500" />{" "}
                 {weather.main.temp}°C
               </p>
-              <p className="capitalize text-xs">{weather.weather[0].description}</p>
+              <p className="capitalize text-xs">
+                {weather.weather[0].description}
+              </p>
               <div className="flex justify-around mt-1 text-xs text-gray-700">
                 <p>
                   <Droplet className="w-3 h-3 inline" /> {weather.main.humidity}%

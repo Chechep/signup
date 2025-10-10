@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { auth, googleProvider, signInWithPopup, signInAnonymously } from "../firebase";
 
 export default function Signin() {
   const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ export default function Signin() {
   const [shakeFields, setShakeFields] = useState({});
   const [showPassword, setShowPassword] = useState(false);
 
-  const navigate = useNavigate(); // hook for navigation
+  const navigate = useNavigate();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validateField = (name, value) => {
@@ -29,9 +30,17 @@ export default function Signin() {
     setErrors(newErrors);
   };
 
+  const handleChange = (name, value) => {
+    switch (name) {
+      case "email": setEmail(value); break;
+      case "password": setPassword(value); break;
+      default: break;
+    }
+    validateField(name, value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const newErrors = {};
     if (!emailRegex.test(email)) newErrors.email = "Invalid email address.";
     if (!password) newErrors.password = "Password is required.";
@@ -44,19 +53,30 @@ export default function Signin() {
     });
     setShakeFields(shake);
 
-    // If no errors, navigate to Home page
     if (Object.keys(newErrors).length === 0) {
-      navigate("/home"); // redirect to /home
+      // You can replace this with Firebase email/password sign-in if needed
+      navigate("/home");
     }
   };
 
-  const handleChange = (name, value) => {
-    switch (name) {
-      case "email": setEmail(value); break;
-      case "password": setPassword(value); break;
-      default: break;
+  // Google Sign-In
+  const handleGoogleSignin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      navigate("/home");
+    } catch (err) {
+      console.error(err.message);
     }
-    validateField(name, value);
+  };
+
+  // Anonymous Sign-In
+  const handleAnonymousSignin = async () => {
+    try {
+      await signInAnonymously(auth);
+      navigate("/home");
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   const inputWrapper = "flex items-center border rounded bg-gray-300 border-gray-400 w-full h-12 px-3";
@@ -104,11 +124,26 @@ export default function Signin() {
           {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
         </div>
 
-        <button
-          type="submit"
-          className="bg-teal-500 text-white py-2 rounded hover:bg-teal-800"
-        >
+        <button type="submit" className="bg-teal-500 text-white py-2 rounded hover:bg-teal-800">
           Sign In
+        </button>
+
+        {/* Google Sign-In */}
+        <button
+          type="button"
+          onClick={handleGoogleSignin}
+          className="bg-red-500 text-white py-2 rounded hover:bg-red-700"
+        >
+          Sign In with Google
+        </button>
+
+        {/* Anonymous Sign-In */}
+        <button
+          type="button"
+          onClick={handleAnonymousSignin}
+          className="bg-gray-500 text-white py-2 rounded hover:bg-gray-700"
+        >
+          Sign In Anonymously
         </button>
       </form>
 

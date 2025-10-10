@@ -1,16 +1,39 @@
 // src/context/AuthContext.jsx
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { auth } from "../firebase";
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // default true for testing
+  const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
 
-  const login = () => setIsLoggedIn(true);
-  const logout = () => setIsLoggedIn(false);
+  // Track Firebase auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      if (!user) {
+        navigate("/signin"); // redirect to sign-in if logged out
+      }
+    });
+    return unsubscribe;
+  }, [navigate]);
+
+  // Logout function
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setCurrentUser(null);
+      navigate("/signin"); // redirect after logout
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

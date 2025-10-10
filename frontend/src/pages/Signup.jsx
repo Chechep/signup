@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { auth, googleProvider, signInWithPopup, createUserWithEmailAndPassword, signInAnonymously } from "../firebase";
 
 export default function Signup() {
   const [fullName, setFullName] = useState("");
@@ -10,6 +11,7 @@ export default function Signup() {
   const [shakeFields, setShakeFields] = useState({});
   const [showPassword, setShowPassword] = useState(false);
 
+  const navigate = useNavigate();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validateField = (name, value) => {
@@ -33,7 +35,17 @@ export default function Signup() {
     setErrors(newErrors);
   };
 
-  const handleSubmit = (e) => {
+  const handleChange = (name, value) => {
+    switch (name) {
+      case "fullName": setFullName(value); break;
+      case "email": setEmail(value); break;
+      case "password": setPassword(value); break;
+      default: break;
+    }
+    validateField(name, value);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
     if (!fullName.trim()) newErrors.fullName = "Full Name is required.";
@@ -49,18 +61,38 @@ export default function Signup() {
     setShakeFields(shake);
 
     if (Object.keys(newErrors).length === 0) {
-      alert("Signup successful!");
+      try {
+        // Firebase email/password signup
+        await createUserWithEmailAndPassword(auth, email, password);
+        // Optionally, you can update user profile with fullName here
+        navigate("/home");
+      } catch (err) {
+        console.error(err.message);
+        alert(err.message);
+      }
     }
   };
 
-  const handleChange = (name, value) => {
-    switch (name) {
-      case "fullName": setFullName(value); break;
-      case "email": setEmail(value); break;
-      case "password": setPassword(value); break;
-      default: break;
+  // Google Sign-Up
+  const handleGoogleSignup = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      navigate("/home");
+    } catch (err) {
+      console.error(err.message);
+      alert(err.message);
     }
-    validateField(name, value);
+  };
+
+  // Anonymous Sign-Up
+  const handleAnonymousSignup = async () => {
+    try {
+      await signInAnonymously(auth);
+      navigate("/home");
+    } catch (err) {
+      console.error(err.message);
+      alert(err.message);
+    }
   };
 
   const inputWrapper = "flex items-center border rounded bg-gray-300 border-gray-400 w-full h-12 px-3";
@@ -123,19 +155,34 @@ export default function Signup() {
           {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
         </div>
 
-        <button
-          type="submit"
-          className="bg-teal-500 text-white py-2 rounded hover:bg-teal-800"
-        >
+        <button type="submit" className="bg-teal-500 text-white py-2 rounded hover:bg-teal-800">
           Sign Up
         </button>
+
+        {/* Google Sign-Up */}
+        <button
+          type="button"
+          onClick={handleGoogleSignup}
+          className="bg-red-500 text-white py-2 rounded hover:bg-red-700"
+        >
+          Sign Up with Google
+        </button>
+
+        {/* Anonymous Sign-Up */}
+        <button
+          type="button"
+          onClick={handleAnonymousSignup}
+          className="bg-gray-500 text-white py-2 rounded hover:bg-gray-700"
+        >
+          Sign Up Anonymously
+        </button>
+
       </form>
 
       <p className="mt-4 text-sm text-center">
         Already have an account? <Link to="/signin" className="text-sky-500">Sign In</Link>
       </p>
 
-      {/* Tailwind shake animation */}
       <style>
         {`
           @keyframes shake {
